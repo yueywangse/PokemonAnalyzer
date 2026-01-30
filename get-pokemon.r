@@ -22,6 +22,7 @@ get_stats <- function(url) {
     hp      = stats["hp"],
     attack  = stats["attack"],
     defense = stats["defense"],
+    type = p$types$type$name,
     moves = p$moves,
     picture = p$sprites$other$`official-artwork`$front_default
   )
