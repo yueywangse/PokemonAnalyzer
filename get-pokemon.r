@@ -4,9 +4,28 @@ library(jsonlite)
 res <- GET("https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0")
 stop_for_status(res)
 
-pokemon_list <- fromJSON(content(res, "text", encoding = "UTF-8"))$results
+pokemon_list <- fromJSON(content(res, "text", encoding = "UTF-8"))$results[1:10,]
 
-get_stats <- function(url) {
+get_move_details <- function(move_row) {
+  mres <- GET(move_row$url)
+  stop_for_status(mres)
+
+  m <- fromJSON(content(mres, "text", encoding = "UTF-8"))
+
+  to_zero <- function(x) {
+    if (is.null(x) || (is.atomic(x) && length(x) == 0) || is.na(x)) 0 else x
+  }
+
+  list(
+    name         = m$name,
+    accuracy     = to_zero(m$accuracy),
+    power        = to_zero(m$power),
+    damage_class = m$damage_class$name,
+    type         = m$type$name
+  )
+}
+
+get_stats <- function(url, max_moves = 5) {
   res <- GET(url)
   stop_for_status(res)
 
@@ -17,14 +36,23 @@ get_stats <- function(url) {
     p$stats$stat$name
   )
 
+  moves <- p$moves$move
+  if (!is.null(max_moves)) {
+    moves <- head(moves, max_moves)
+  }
+
+  move_details <- lapply(seq_len(nrow(moves)), function(i) get_move_details(moves[i, ]))
+
   list(
-    name    = p$name,
-    hp      = stats["hp"],
-    attack  = stats["attack"],
-    defense = stats["defense"],
-    type = p$types$type$name,
-    moves = p$moves,
-    picture = p$sprites$other$`official-artwork`$front_default
+    name     = p$name,
+    hp       = stats["hp"],
+    attack   = stats["attack"],
+    defense  = stats["defense"],
+    sattack  = stats["special-attack"],
+    sdefense = stats["special-defense"],
+    type     = unname(p$types$type$name),
+    moves    = move_details,
+    picture  = p$sprites$other$`official-artwork`$front_default
   )
 }
 
