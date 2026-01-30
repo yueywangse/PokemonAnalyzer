@@ -4,7 +4,7 @@ library(jsonlite)
 res <- GET("https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0")
 stop_for_status(res)
 
-pokemon_list <- fromJSON(content(res, "text", encoding = "UTF-8"))$results[1:10,]
+pokemon_list <- fromJSON(content(res, "text", encoding = "UTF-8"))$results
 
 get_stats <- function(url) {
   res <- GET(url)
