@@ -37,11 +37,20 @@ get_stats <- function(url, max_moves = 5) {
   )
 
   moves <- p$moves$move
-  if (!is.null(max_moves)) {
-    moves <- head(moves, max_moves)
+  move_details <- list()
+  if (!is.null(moves) && length(moves) > 0) {
+    # ensure data.frame for consistent indexing
+    if (!is.data.frame(moves)) {
+      moves <- as.data.frame(moves, stringsAsFactors = FALSE)
+    }
+    if (!is.null(max_moves)) {
+      moves <- head(moves, max_moves)
+    }
+    move_count <- nrow(moves)
+    if (!is.null(move_count) && move_count > 0) {
+      move_details <- lapply(seq_len(move_count), function(i) get_move_details(moves[i, ]))
+    }
   }
-
-  move_details <- lapply(seq_len(nrow(moves)), function(i) get_move_details(moves[i, ]))
 
   list(
     name     = p$name,
