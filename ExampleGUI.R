@@ -4,12 +4,12 @@ library(shinyjs)
 library(httr2)
 library(jsonlite)
 
-call_gemini <- function(prompt) {
+call_gemini <- function(prompt, apikey) {
   
   req <- request(
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
   ) |>
-    req_url_query(key = "AIzaSyCAc_vPi0Y8jNRWF3c_qvtbAKJ_iQUCoOI") |>
+    req_url_query(key = apikey) |>
     req_method("POST") |>
     req_headers("Content-Type" = "application/json") |>
     req_body_json(list(
@@ -34,6 +34,19 @@ ui <- fluidPage(
   
   useShinyjs(),
   
+  tags$head(
+    tags$style(HTML("
+    .wrap-text {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      height: auto !important;
+      min-height: 50px;
+      overflow-y: visible;
+    }
+  "))
+  ),
+  
   fluidRow(
     column(
       12,
@@ -43,6 +56,13 @@ ui <- fluidPage(
   ),
   
   br(),
+  
+  fluidRow(
+    column(
+      12,
+      align = "center",
+      textInput("input_main", "Gemini API Key:")),
+  ),
   
   fluidRow(
     column(6, h3("Your Pokemon:")),
@@ -75,11 +95,8 @@ ui <- fluidPage(
     column(
       6,
       offset = 3,
-      tags$label("Our Suggestion"),
-      tags$div(
-        class = "form-control",
-        textOutput("output_c")
-      )
+      tags$label("Our Suggestion:"),
+      uiOutput("output_c")
     )
   ),
   
@@ -90,12 +107,11 @@ ui <- fluidPage(
       6,
       offset = 3,
       tags$label("AI Suggestion:"),
-      tags$div(
-        class = "form-control",
-        textOutput("output_d")
-      )
+      uiOutput("output_d")
     )
-  )
+  ),
+  
+  br(), br()
 )
 
 
@@ -108,28 +124,42 @@ server <- function(input, output, session) {
     on.exit(shinyjs::enable("start"), add = TRUE)
     
     # show inputs
-    output$output_c <- renderText({
-      paste(
-        "| A:", input$input_a,
-        "| B:", input$input_b
+    output$output_c <- renderUI({
+      tags$div(
+        class = "form-control wrap-text",
+        paste(
+          "| A:", input$input_a,
+          "| B:", input$input_b
+        )
       )
     })
     
-    prompt <- paste0(
-      "My pokemon is ", input$input_a,
-      ". The enemy pokemon is ", input$input_b,
-      ". What is your suggestion in less than 100 words?"
-    )
+    apikey <- trimws(input$input_main)
     
-    # 👇 enforce spacing between calls
-    Sys.sleep(6)
+    if(apikey != "") {
     
-    AIAnswer <- tryCatch(
-      call_gemini(prompt),
-      error = function(e) paste("Gemini error:", e$message)
-    )
+      prompt <- paste0(
+        "My pokemon is ", input$input_a,
+        ". The enemy pokemon is ", input$input_b,
+        ". What is your suggestion in less than 100 words?"
+      )
+      
+      # 👇 enforce spacing between calls
+      Sys.sleep(6)
+      
+      AIAnswer <- tryCatch(
+        call_gemini(prompt, input$input_main),
+        error = function(e) paste("Gemini error:", e$message)
+      )
+      
+      output$output_d <- renderUI({
+        tags$div(
+          class = "form-control wrap-text",
+          AIAnswer
+        )
+      })
     
-    output$output_d <- renderText(AIAnswer)
+    }
     
   })
   
