@@ -1,0 +1,26 @@
+{
+    "id": "4DE782DF",
+    "path": "~/Documents/UBC/Data 534/PokemonAnalyzer/get-pokemon.r",
+    "project_path": "get-pokemon.r",
+    "type": "r_source",
+    "hash": "3727711258",
+    "contents": "",
+    "dirty": false,
+    "created": 1769801794791.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "67,0",
+        "scrollLine": "43"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1769799701,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1769799701,
+    "read_only": false,
+    "read_only_alternatives": []
+}
