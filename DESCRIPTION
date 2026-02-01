@@ -2,11 +2,11 @@ Package: pokeapiclient
 Type: Package
 Title: Client for the PokeAPI REST Service
 Version: 0.1.0
-Authors@R: c(person(given = "PokemonAnalyzer", family = "Contributors", role = c("aut", "cre"),
+Authors@R: c(person(given = "Yue", family = "Wang", role = c("aut", "cre"),
     email = "yue.yale.wang@hotmail.com"),
-	     person(given = "PokemonAnalyzer", family = "Contributors", role = c("aut", "cre"),
+	     person(given = "Richard", family = "Hua", role = "ctb",
     email = "yue.yale.wang@hotmail.com"),
-             person(given = "PokemonAnalyzer", family = "Contributors", role = c("aut", "cre"),
+             person(given = "Jordan", family = "Kaseram", role = "ctb",
     email = "yue.yale.wang@hotmail.com"))
 Description: Provides a small, well-tested wrapper around the public PokeAPI REST
     service, including helpers to list Pokemon and retrieve detailed data with
