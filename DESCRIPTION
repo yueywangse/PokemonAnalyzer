@@ -18,9 +18,7 @@ BugReports: https://github.com/yueywangse/PokemonAnalyzer/issues
 Depends: R (>= 4.1)
 Imports:
     httr,
-    jsonlite,
-    shiny,
-    shinyjs
+    jsonlite
 Suggests:
     testthat (>= 3.0.0),
     knitr,
