@@ -24,7 +24,9 @@ Suggests:
     knitr,
     rmarkdown,
     ggplot2,
-    ggrepel
+    ggrepel,
+    shiny,
+    shinyjs
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr

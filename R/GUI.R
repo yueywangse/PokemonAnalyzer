@@ -1,5 +1,3 @@
-library(httr2)
-
 # use wrapper functions from the package (sourced locally to avoid install step)
 source("R/api_client.R")
 source("R/pokemon.R")
