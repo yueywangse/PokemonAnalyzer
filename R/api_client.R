@@ -54,17 +54,19 @@ pokeapi_request <- function(path, query = list(), timeout_sec = 15, retry = TRUE
   jsonlite::fromJSON(text, simplifyVector = FALSE)
 }
 
-#' Call the Google Gemini API to generate text
+#' Call the Google Gemini API
 #'
-#' Sends a prompt to the Gemini model and returns the first candidate's text
-#' response. Uses the `generateContent` endpoint of the Google Generative
-#' Language API.
+#' Send a text prompt to the Gemini model and return the first candidate's text.
 #'
-#' @param prompt Character string with the text prompt to send.
-#' @param apikey Character string containing your Gemini API key.
+#' @param prompt Character string prompt to send.
+#' @param apikey Character string Gemini API key.
 #' @param model Model name to call (default: "gemini-2.5-flash").
 #'
-#' @return Character string with the model's first text candidate.
+#' @return Character string containing the model output.
+#' @examples
+#' \dontrun{
+#' call_gemini("Explain type advantages in Pokemon battles.", Sys.getenv("GEMINI_API_KEY"))
+#' }
 #' @export
 call_gemini <- function(prompt, apikey, model = "gemini-2.5-flash") {
   stopifnot(is.character(prompt), length(prompt) == 1)
