@@ -30,13 +30,15 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get update -y
 
+      # Install dependencies normally (optional but recommended)
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          # Force install shiny + rcmdcheck (and you can add more packages here)
-          extra-packages: |
-            any::rcmdcheck
-            any::shiny
           needs: check
+          extra-packages: any::rcmdcheck
+
+      # BRUTE FORCE: ensure shiny is installed in the runner library
+      - name: Force install shiny
+        run: Rscript -e 'install.packages("shiny", repos = "https://cloud.r-project.org")'
 
       - name: Check
         uses: r-lib/actions/check-r-package@v2
