@@ -7,7 +7,7 @@ Authors@R: c(person(given = "Yue", family = "Wang", role = c("aut", "cre"),
 	     person(given = "Richard", family = "Hua", role = "ctb",
     email = "yue.yale.wang@hotmail.com"),
              person(given = "Jordan", family = "Kaseram", role = "ctb",
-    email = "yue.yale.wang@hotmail.com"))
+    email = "kaseramj2@gmail.com"))
 Description: Provides a small, well-tested wrapper around the public PokeAPI REST
     service, including helpers to list Pokemon and retrieve detailed data with
     structured outputs ready for analysis and visualization, and GUI functionality
