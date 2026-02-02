@@ -74,32 +74,31 @@ if (has_net()) {
 }
 ```
 
-<!-- ## GUI: Battle Calculator
+## GUI: Battle Calculator
 
 PokemonAnalyzer includes a Shiny-based GUI battle calculator. This is an interactive feature, so we do not run it automatically inside the vignette.
 
 ```{r gui_source, eval=FALSE}
 # run_gui()
-``` -->
 
 ## Console interface: Team Coverage (1-6 Pokémon)
+```
 
 PokemonAnalyzer also includes an interactive console tool that analyzes a team’s defensive and offensive type matchups using PokéAPI typing.
 
 ### Run the console tool
 
-```{r console_run, eval=FALSE}
+```{r, eval=FALSE}
 # run_team_console()
 ```
 
-The console interface will prompt you for 1-6 Pokémon names, then prints: 
+The console interface will prompt you for 1-6 Pokémon names, then prints:
 
-- **Defensive multiplier matrix** (rows = attacking type, columns = your team)
+-   **Defensive multiplier matrix** (rows = attacking type, columns = your team)
 
-- **Types with no team resistance** (no Pokémon takes <= 0.5x)
+-   **Types with no team resistance** (no Pokémon takes \<= 0.5x)
 
-- **Offensive multiplier matrix** (rows = defending type, columns = your team)
-
+-   **Offensive multiplier matrix** (rows = defending type, columns = your team)
 
 ## Notes on offline use
 
