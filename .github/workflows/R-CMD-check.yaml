@@ -30,36 +30,40 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get update -y
 
-      # Install Imports (and Suggests needed for vignettes/check) directly from DESCRIPTION
-      - name: Install deps from DESCRIPTION
+      - name: Install deps from DESCRIPTION (no regex escaping)
         run: |
           Rscript -e '
-            desc <- read.dcf("DESCRIPTION")[1,]
-            parse_field <- function(x) {
-              if (is.null(x) || is.na(x) || !nzchar(x)) return(character())
-              x <- gsub("[\r\n]", " ", x)
-              pkgs <- unlist(strsplit(x, ","))
-              pkgs <- trimws(gsub("\\(.*\\)", "", pkgs))
-              pkgs[nzchar(pkgs)]
-            }
-            imports  <- parse_field(desc[["Imports"]])
-            suggests <- parse_field(desc[["Suggests"]])
+            d <- read.dcf("DESCRIPTION")[1,]
 
-            # minimal suggests for vignettes/check; add more if needed
+            # split on commas, trim whitespace, drop version specs "(...)" without regex
+            clean_pkgs <- function(x) {
+              if (is.null(x) || is.na(x) || !nzchar(x)) return(character())
+              x <- gsub("\n", " ", x, fixed = TRUE)
+              parts <- trimws(strsplit(x, ",", fixed = TRUE)[[1]])
+              parts <- parts[nzchar(parts)]
+              # remove everything after first space (handles "pkg (>= 1.0.0)")
+              parts <- sub(" .*", "", parts)
+              parts
+            }
+
+            imports  <- clean_pkgs(d[["Imports"]])
+            suggests <- clean_pkgs(d[["Suggests"]])
+
+            # minimal suggests needed for check/vignettes
             must_suggest <- intersect(suggests, c("knitr", "rmarkdown", "testthat"))
             pkgs <- unique(c(imports, must_suggest, "rcmdcheck"))
 
             cat("Installing:", paste(pkgs, collapse = ", "), "\n")
             install.packages(pkgs, repos = "https://cloud.r-project.org")
-            cat("Installed OK\n")
           '
 
-      - name: Verify key deps are available
+      - name: Verify key deps
         run: |
           Rscript -e 'stopifnot(requireNamespace("httr2", quietly=TRUE));
+                      stopifnot(requireNamespace("jsonlite", quietly=TRUE));
                       stopifnot(requireNamespace("shiny", quietly=TRUE));
                       stopifnot(requireNamespace("shinyjs", quietly=TRUE));
-                      cat("Verified httr2/shiny/shinyjs OK\n")'
+                      cat("Verified deps OK\n")'
 
       - name: Check
         uses: r-lib/actions/check-r-package@v2
