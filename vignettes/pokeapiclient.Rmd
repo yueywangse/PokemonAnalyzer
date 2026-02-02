@@ -79,12 +79,12 @@ if (has_net()) {
 PokemonAnalyzer includes a Shiny-based GUI battle calculator. This is an interactive feature, so we do not run it automatically inside the vignette.
 
 ```{r gui_source, eval=FALSE}
-# run_gui()
-
-## Console interface: Team Coverage (1-6 Pokémon)
+run_app()
 ```
 
-PokemonAnalyzer also includes an interactive console tool that analyzes a team’s defensive and offensive type matchups using PokéAPI typing.
+## Console interface: Team Coverage (1-6 Pokémon)
+
+PokemonAnalyzer also includes an interactive console tool that analyzes a team’s defensive and offensive type match-ups using PokéAPI typing.
 
 ### Run the console tool
 
@@ -99,6 +99,28 @@ The console interface will prompt you for 1-6 Pokémon names, then prints:
 -   **Types with no team resistance** (no Pokémon takes \<= 0.5x)
 
 -   **Offensive multiplier matrix** (rows = defending type, columns = your team)
+
+## Visualizations
+
+### Base stat allocation
+
+This plot shows how each Pokémon’s base stat total (BST) are allocated across the six stats (HP, Attack, Defense, Special Attack, Special Defense, Speed).
+
+```{r bst_plot, eval=FALSE}
+if (has_net()) {
+  plot_bst_allocation(c("stakataka", "regieleki", "cleffa", "eevee"))
+}
+```
+
+### Attack vs. Speed
+
+This plot compares Attack and Speed for a small set of Pokémon.
+
+```{r atk_speed_plot, eval=FALSE}
+ if (has_net()) {
+  plot_attack_vs_speed(c("stakataka", "regieleki", "cleffa", "eevee"))
+}
+```
 
 ## Notes on offline use
 

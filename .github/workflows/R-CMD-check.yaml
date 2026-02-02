@@ -13,9 +13,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: ubuntu-latest,   r: 'release'}
-          - {os: macos-latest,    r: 'release'}
-          - {os: windows-latest,  r: 'release'}
+          - {os: ubuntu-latest,   r: "release"}
+          - {os: macos-latest,    r: "release"}
+          - {os: windows-latest,  r: "release"}
 
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +32,6 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
           needs: check
 
       - name: Check
