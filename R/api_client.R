@@ -54,6 +54,72 @@ pokeapi_request <- function(path, query = list(), timeout_sec = 15, retry = TRUE
   jsonlite::fromJSON(text, simplifyVector = FALSE)
 }
 
+#' Call the Google Gemini API to generate text
+#'
+#' Sends a prompt to the Gemini model and returns the first candidate's text
+#' response. Uses the `generateContent` endpoint of the Google Generative
+#' Language API.
+#'
+#' @param prompt Character string with the text prompt to send.
+#' @param apikey Character string containing your Gemini API key.
+#' @param model Model name to call (default: "gemini-2.5-flash").
+#'
+#' @return Character string with the model's first text candidate.
+#' @export
+call_gemini <- function(prompt, apikey, model = "gemini-2.5-flash") {
+  stopifnot(is.character(prompt), length(prompt) == 1)
+  stopifnot(is.character(apikey), length(apikey) == 1)
+
+  apikey <- trimws(apikey)
+  if (!nzchar(apikey)) {
+    stop("`apikey` must be a non-empty string", call. = FALSE)
+  }
+
+  url <- sprintf(
+    "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent",
+    model
+  )
+
+  body <- list(
+    contents = list(
+      list(
+        parts = list(
+          list(text = prompt)
+        )
+      )
+    )
+  )
+
+  resp <- httr::POST(
+    url,
+    query = list(key = apikey),
+    body = body,
+    encode = "json",
+    httr::user_agent("pokeapiclient/0.1.0 (https://github.com/yueywangse/PokemonAnalyzer)")
+  )
+
+  if (httr::http_error(resp)) {
+    msg <- tryCatch(
+      httr::content(resp, as = "text", encoding = "UTF-8"),
+      error = function(...) "(no body)"
+    )
+    stop(sprintf("Gemini request failed [%s]: %s", httr::status_code(resp), msg), call. = FALSE)
+  }
+
+  parsed <- httr::content(resp, as = "parsed", type = "application/json", encoding = "UTF-8")
+  candidates <- parsed$candidates
+  if (is.null(candidates) || length(candidates) == 0) {
+    stop("Gemini response missing candidates", call. = FALSE)
+  }
+
+  parts <- candidates[[1]]$content$parts
+  if (is.null(parts) || length(parts) == 0) {
+    stop("Gemini response missing content parts", call. = FALSE)
+  }
+
+  parts[[1]]$text %||% ""
+}
+
 `%||%` <- function(x, y) {
   if (is.null(x) || (length(x) == 0)) y else x
 }
