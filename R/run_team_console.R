@@ -11,7 +11,7 @@ run_team_console <- function(input_fun = readline,
                              output_fun = cat) {
   output_fun("\n=== PokemonAnalyzer: Team Coverage Console ===\n")
   output_fun("Enter 1–6 Pokémon names separated by commas.\n")
-  output_fun("Example: Spiritomb, togekiss, Togekiss, Porygon-Z, milotic,  Garchomp\n")
+  output_fun("Example: Spiritomb, togekiss, Lucario, Porygon-Z, milotic,  Garchomp\n")
   output_fun("Type 'q' to quit.\n\n")
 
   repeat {
