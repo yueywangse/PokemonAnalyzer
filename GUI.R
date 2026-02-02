@@ -8,62 +8,6 @@ source("R/api_client.R")
 source("R/pokemon.R")
 source("pokemon_matchup.r")
 
-#' Call the Google Gemini API to Generate Text
-#'
-#' Sends a text prompt to the Google Gemini (gemini-2.5-flash) model and
-#' returns the generated text response.
-#'
-#' This function uses the \pkg{httr2} package to make a POST request to the
-#' Google Generative Language API. The API key is passed as a query parameter
-#' and the prompt is sent as JSON in the request body.
-#'
-#' @param prompt A character string containing the text prompt to send to
-#' the Gemini model.
-#' @param apikey A character string containing your Google Gemini API key.
-#'
-#' @return A character string containing the generated text from the model.
-#' If the API call is successful, this is the text of the first candidate
-#' returned by the model.
-#'
-#' @details
-#' The function calls the \code{gemini-2.5-flash} model via the
-#' \code{generateContent} endpoint. Only the first candidate and first text
-#' part of the response is returned.
-#'
-#' @seealso
-#' \link[httr2]{request}, \link[httr2]{req_perform},
-#' \link[httr2]{resp_body_json}
-#'
-#' @examples
-#' \dontrun{
-#' key <- Sys.getenv("GEMINI_API_KEY")
-#' call_gemini("Explain unit testing in R", key)
-#' }
-#'
-#' @export
-call_gemini <- function(prompt, apikey) {
-  req <- request(
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
-  ) |>
-    req_url_query(key = apikey) |>
-    req_method("POST") |>
-    req_headers("Content-Type" = "application/json") |>
-    req_body_json(list(
-      contents = list(
-        list(
-          parts = list(
-            list(text = prompt)
-          )
-        )
-      )
-    ))
-
-  # below parses the response for the string we're looking for
-  resp <- req_perform(req)
-  parsed <- resp_body_json(resp)
-  parsed$candidates[[1]]$content$parts[[1]]$text
-}
-
 # code below sets up the ui elements for the GUI, not intended for independent use
 ui <- fluidPage(
   useShinyjs(), # initializes shinyjs for ui
