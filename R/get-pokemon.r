@@ -1,3 +1,9 @@
+#' Download full Pokemon roster and assemble cached stats
+#'
+#' Helper utilities that call the public PokeAPI to build `pokemon_stats.json`,
+#' a cached data file consumed elsewhere in the package. These helpers are
+#' intended for data generation, not as part of the public API.
+#' @keywords internal
 library(httr)
 library(jsonlite)
 
@@ -6,6 +12,12 @@ stop_for_status(res)
 
 pokemon_list <- fromJSON(content(res, "text", encoding = "UTF-8"))$results
 
+#' Fetch details for a single move
+#'
+#' @param move_row Row from the moves data.frame returned by the Pokemon call
+#'   containing `name` and `url` columns.
+#' @return List with `name`, `accuracy`, `power`, `damage_class`, and `type`.
+#' @keywords internal
 get_move_details <- function(move_row) {
   mres <- GET(move_row$url)
   stop_for_status(mres)
@@ -25,6 +37,13 @@ get_move_details <- function(move_row) {
   )
 }
 
+#' Fetch stats and limited move info for one Pokemon
+#'
+#' @param url Fully-qualified PokeAPI URL for a Pokemon resource.
+#' @param max_moves Optional integer limiting how many moves to fetch (default 5).
+#' @return List containing core stats, types, first `max_moves` move details,
+#'   and the official artwork URL.
+#' @keywords internal
 get_stats <- function(url, max_moves = 5) {
   res <- GET(url)
   stop_for_status(res)
