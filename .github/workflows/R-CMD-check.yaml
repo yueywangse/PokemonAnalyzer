@@ -26,27 +26,14 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2
 
-      - name: Install system deps
+      - name: Install system deps (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get update -y
 
-      # Show library paths (debug)
-      - name: Show R lib paths
-        run: Rscript -e 'print(.libPaths()); sessionInfo()'
-
-      # Install shiny into the FIRST library path explicitly
-      - name: Force install shiny (explicit lib)
-        run: Rscript -e 'install.packages("shiny", lib=.libPaths()[1], repos="https://cloud.r-project.org"); cat("Installed shiny in:", .libPaths()[1], "\n"); print(installed.packages(lib.loc=.libPaths()[1])[,"Package"])'
-
-      # Normal dependency setup (optional)
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
           needs: check
-
-      # Confirm shiny is visible right before the check
-      - name: Verify shiny is loadable
-        run: Rscript -e 'library(shiny); cat("shiny loaded OK\n")'
+          extra-packages: any::rcmdcheck
 
       - name: Check
         uses: r-lib/actions/check-r-package@v2
