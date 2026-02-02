@@ -162,4 +162,10 @@ server <- function(input, output, session) {
 }
 
 # connects ui to server code for backend
-shinyApp(ui, server)
+run_app <- function(...) {
+  if (!interactive()) {
+    stop("run_app() must be called in an interactive R session", call. = FALSE)
+  }
+  
+  shiny::shinyApp(ui = ui, server = server)
+}
