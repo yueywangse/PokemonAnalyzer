@@ -2,12 +2,45 @@ library(shiny)
 library(shinyjs)
 
 library(httr2)
-library(jsonlite)
 
-# local battle logic + dataset loader
+# use wrapper functions from the package (sourced locally to avoid install step)
+source("R/api_client.R")
+source("R/pokemon.R")
 source("pokemon_matchup.r")
-source("get_pokemon_id.r")
 
+#' Call the Google Gemini API to Generate Text
+#'
+#' Sends a text prompt to the Google Gemini (gemini-2.5-flash) model and
+#' returns the generated text response.
+#'
+#' This function uses the \pkg{httr2} package to make a POST request to the
+#' Google Generative Language API. The API key is passed as a query parameter
+#' and the prompt is sent as JSON in the request body.
+#'
+#' @param prompt A character string containing the text prompt to send to
+#' the Gemini model.
+#' @param apikey A character string containing your Google Gemini API key.
+#'
+#' @return A character string containing the generated text from the model.
+#' If the API call is successful, this is the text of the first candidate
+#' returned by the model.
+#'
+#' @details
+#' The function calls the \code{gemini-2.5-flash} model via the
+#' \code{generateContent} endpoint. Only the first candidate and first text
+#' part of the response is returned.
+#'
+#' @seealso
+#' \link[httr2]{request}, \link[httr2]{req_perform},
+#' \link[httr2]{resp_body_json}
+#'
+#' @examples
+#' \dontrun{
+#' key <- Sys.getenv("GEMINI_API_KEY")
+#' call_gemini("Explain unit testing in R", key)
+#' }
+#'
+#' @export
 call_gemini <- function(prompt, apikey) {
   req <- request(
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
@@ -25,23 +58,16 @@ call_gemini <- function(prompt, apikey) {
       )
     ))
 
+  # below parses the response for the string we're looking for
   resp <- req_perform(req)
   parsed <- resp_body_json(resp)
   parsed$candidates[[1]]$content$parts[[1]]$text
 }
 
-get_picture_url <- function(name) {
-  if (!file.exists("pokemon_stats.json")) return(NA_character_)
-  data <- load_pokemon_data()
-  idx <- match(tolower(name), tolower(data$name))
-  if (is.na(idx)) return(NA_character_)
-  data$picture[[idx]]
-}
-
-
+# code below sets up the ui elements for the GUI, not intended for independent use
 ui <- fluidPage(
-  useShinyjs(),
-  tags$head(
+  useShinyjs(), # initializes shinyjs for ui
+  tags$head( # sets the css parameters for the ui
     tags$style(HTML("
     .wrap-text {
       white-space: pre-wrap;
@@ -53,7 +79,7 @@ ui <- fluidPage(
     }
   "))
   ),
-  fluidRow(
+  fluidRow( # the title of the ui
     column(
       12,
       align = "center",
@@ -61,27 +87,27 @@ ui <- fluidPage(
     )
   ),
   br(),
-  fluidRow(
+  fluidRow( # where to input the gemini api key
     column(
       12,
       align = "center",
       textInput("input_main", "Gemini API Key:")
     ),
   ),
-  fluidRow(
+  fluidRow( # Titles of the pokemon entered
     column(6, h3("Your Pokemon:")),
     column(6, h3("Enemy Pokemon:"))
   ),
-  fluidRow(
+  fluidRow( # Where the pokemon image asset will be loaded when entered
     column(6, uiOutput("img_a")),
     column(6, uiOutput("img_b"))
   ),
-  fluidRow(
+  fluidRow( # Fields to input pokemon names
     column(6, textInput("input_a", "Input:")),
     column(6, textInput("input_b", "Input:"))
   ),
   br(),
-  fluidRow(
+  fluidRow( # Button to trigger calculation and ai prompt
     column(
       12,
       align = "center",
@@ -89,7 +115,7 @@ ui <- fluidPage(
     )
   ),
   br(),
-  fluidRow(
+  fluidRow( # Our mathematical analysis of the matchup
     column(
       6,
       offset = 3,
@@ -98,7 +124,7 @@ ui <- fluidPage(
     )
   ),
   br(),
-  fluidRow(
+  fluidRow( # AI suggestion of the matchup
     column(
       6,
       offset = 3,
@@ -109,44 +135,46 @@ ui <- fluidPage(
   br(), br()
 )
 
-
+# backend code to use with ui, not intended for independent use
 server <- function(input, output, session) {
-  placeholder_src <- "https://via.placeholder.com/300x300?text=Pokemon"
+  placeholder_src <- "https://via.placeholder.com/300x300?text=Pokemon" #base url for pokemon images
 
-  render_img <- function(name) {
-    if (is.null(name) || !nzchar(name)) {
+  render_img <- function(pokemon_obj = NULL) { # function to generate correct url depending on pokmeon name
+    if (is.null(pokemon_obj) || inherits(pokemon_obj, "error")) {
       return(img(src = placeholder_src, width = "80%"))
     }
-    src <- get_picture_url(name)
-    if (is.na(src) || src == "") {
-      img(src = placeholder_src, width = "80%")
-    } else {
-      img(src = src, width = "80%")
-    }
+
+    src <- pokemon_obj$sprite %||% NA_character_
+    if (is.null(src) || is.na(src) || identical(src, "")) src <- placeholder_src
+    img(src = src, width = "80%")
   }
 
-  output$img_a <- renderUI({ render_img(input$input_a) })
-  output$img_b <- renderUI({ render_img(input$input_b) })
+  output$img_a <- renderUI({ render_img() })
+  output$img_b <- renderUI({ render_img() })
 
-  observeEvent(input$start, {
+  observeEvent(input$start, { # button event to trigger start of calculations
     shinyjs::disable("start")
     on.exit(shinyjs::enable("start"), add = TRUE)
 
-    # our locally computed matchup suggestion
-    output$output_c <- renderUI({
-      req(input$input_a, input$input_b)
+    req(input$input_a, input$input_b)
 
-      if (!file.exists("pokemon_stats.json")) {
-        return(tags$div(
-          class = "form-control wrap-text",
-          "pokemon_stats.json not found. Run get-pokemon.r first to build the dataset."
-        ))
+    pokemon_a <- tryCatch(pokeapi_get_pokemon(input$input_a), error = identity)
+    pokemon_b <- tryCatch(pokeapi_get_pokemon(input$input_b), error = identity)
+
+    output$img_a <- renderUI({ render_img(pokemon_a) })
+    output$img_b <- renderUI({ render_img(pokemon_b) })
+
+    # update of ui on button press
+    output$output_c <- renderUI({
+      if (inherits(pokemon_a, "error")) {
+        return(tags$div(class = "form-control wrap-text", paste("Lookup error:", pokemon_a$message)))
+      }
+      if (inherits(pokemon_b, "error")) {
+        return(tags$div(class = "form-control wrap-text", paste("Lookup error:", pokemon_b$message)))
       }
 
-      res <- tryCatch(
-        pokemon_matchup(input$input_a, input$input_b),
-        error = identity
-      )
+      # locally calculated odds of matchup
+      res <- tryCatch(pokemon_matchup(pokemon_a, pokemon_b), error = identity)
 
       if (inherits(res, "error")) {
         return(tags$div(
@@ -166,16 +194,17 @@ server <- function(input, output, session) {
 
     apikey <- trimws(input$input_main)
 
-    if (apikey != "") {
-      prompt <- paste0(
+    if (apikey != "") { # option to allow a mode with no api key use
+      prompt <- paste0( # generates gemini prompt
         "My pokemon is ", input$input_a,
         ". The enemy pokemon is ", input$input_b,
         ". What is your suggestion in less than 100 words?"
       )
 
       # enforce spacing between calls
-      Sys.sleep(6)
+      Sys.sleep(5)
 
+      # calls gemini to get prompt
       AIAnswer <- tryCatch(
         call_gemini(prompt, apikey),
         error = function(e) paste("Gemini error:", e$message)
@@ -188,4 +217,5 @@ server <- function(input, output, session) {
   })
 }
 
+# connects ui to server code for backend
 shinyApp(ui, server)
