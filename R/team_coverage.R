@@ -53,7 +53,7 @@ get_types_from_api <- function(p) {
   tolower(as.character(p$types))
 }
 
-analyze_team <- function(pokemon_names) {
+analyze_team <- function(pokemon_names, fetch_fun = pokeapi_get_pokemon) {
   pokemon_names <- tolower(trimws(pokemon_names))
   pokemon_names <- pokemon_names[nzchar(pokemon_names)]
   pokemon_names <- unique(pokemon_names)
