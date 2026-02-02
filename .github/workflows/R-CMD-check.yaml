@@ -9,6 +9,7 @@ on:
 jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
+
     strategy:
       fail-fast: false
       matrix:
@@ -26,34 +27,10 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2
 
-      - name: Install system deps (Linux)
-        if: runner.os == 'Linux'
-        run: sudo apt-get update -y
-
-      # Optional: show lib paths to debug install locations
-      - name: Show R lib paths
-        run: Rscript -e 'print(.libPaths()); sessionInfo()'
-
-      # Force-install known missing deps (add more here if CI complains again)
-      - name: Force install runtime deps
-        run: >
-          Rscript -e 'install.packages(c(
-            "shiny",
-            "shinyjs"
-          ), repos="https://cloud.r-project.org")'
-
-      # Verify they load BEFORE the check (so you know install worked)
-      - name: Verify forced deps load
-        run: >
-          Rscript -e 'library(shiny); library(shinyjs); cat("deps loaded OK\n")'
-
-      # Install remaining package deps + rcmdcheck using r-lib actions
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           needs: check
-          extra-packages: any::rcmdcheck
 
-      - name: Check
-        uses: r-lib/actions/check-r-package@v2
+      - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
