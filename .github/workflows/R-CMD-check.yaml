@@ -26,10 +26,42 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          needs: check
+      - name: Install system deps (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update -y
 
-      - uses: r-lib/actions/check-r-package@v2
+      # Install Imports (and Suggests needed for vignettes/check) directly from DESCRIPTION
+      - name: Install deps from DESCRIPTION
+        run: |
+          Rscript -e '
+            desc <- read.dcf("DESCRIPTION")[1,]
+            parse_field <- function(x) {
+              if (is.null(x) || is.na(x) || !nzchar(x)) return(character())
+              x <- gsub("[\r\n]", " ", x)
+              pkgs <- unlist(strsplit(x, ","))
+              pkgs <- trimws(gsub("\\(.*\\)", "", pkgs))
+              pkgs[nzchar(pkgs)]
+            }
+            imports  <- parse_field(desc[["Imports"]])
+            suggests <- parse_field(desc[["Suggests"]])
+
+            # minimal suggests for vignettes/check; add more if needed
+            must_suggest <- intersect(suggests, c("knitr", "rmarkdown", "testthat"))
+            pkgs <- unique(c(imports, must_suggest, "rcmdcheck"))
+
+            cat("Installing:", paste(pkgs, collapse = ", "), "\n")
+            install.packages(pkgs, repos = "https://cloud.r-project.org")
+            cat("Installed OK\n")
+          '
+
+      - name: Verify key deps are available
+        run: |
+          Rscript -e 'stopifnot(requireNamespace("httr2", quietly=TRUE));
+                      stopifnot(requireNamespace("shiny", quietly=TRUE));
+                      stopifnot(requireNamespace("shinyjs", quietly=TRUE));
+                      cat("Verified httr2/shiny/shinyjs OK\n")'
+
+      - name: Check
+        uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
