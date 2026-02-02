@@ -6,7 +6,7 @@ library(httr2)
 # use wrapper functions from the package (sourced locally to avoid install step)
 source("R/api_client.R")
 source("R/pokemon.R")
-source("pokemon_matchup.r")
+source("R/pokemon_matchup.R")
 
 # code below sets up the ui elements for the GUI, not intended for independent use
 ui <- fluidPage(
