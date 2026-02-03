@@ -4,13 +4,6 @@
 #' a cached data file consumed elsewhere in the package. These helpers are
 #' intended for data generation, not as part of the public API.
 #' @keywords internal
-library(httr)
-library(jsonlite)
-
-res <- GET("https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0")
-stop_for_status(res)
-
-pokemon_list <- fromJSON(content(res, "text", encoding = "UTF-8"))$results
 
 #' Fetch details for a single move
 #'
@@ -19,10 +12,10 @@ pokemon_list <- fromJSON(content(res, "text", encoding = "UTF-8"))$results
 #' @return List with `name`, `accuracy`, `power`, `damage_class`, and `type`.
 #' @keywords internal
 get_move_details <- function(move_row) {
-  mres <- GET(move_row$url)
-  stop_for_status(mres)
+  mres <- httr::GET(move_row$url)
+  httr::stop_for_status(mres)
 
-  m <- fromJSON(content(mres, "text", encoding = "UTF-8"))
+  m <- jsonlite::fromJSON(httr::content(mres, "text", encoding = "UTF-8"))
 
   to_zero <- function(x) {
     if (is.null(x) || (is.atomic(x) && length(x) == 0) || is.na(x)) 0 else x
@@ -45,10 +38,10 @@ get_move_details <- function(move_row) {
 #'   and the official artwork URL.
 #' @keywords internal
 get_stats <- function(url, max_moves = 5) {
-  res <- GET(url)
-  stop_for_status(res)
+  res <- httr::GET(url)
+  httr::stop_for_status(res)
 
-  p <- fromJSON(content(res, "text", encoding = "UTF-8"))
+  p <- jsonlite::fromJSON(httr::content(res, "text", encoding = "UTF-8"))
 
   stats <- setNames(
     p$stats$base_stat,
@@ -84,7 +77,36 @@ get_stats <- function(url, max_moves = 5) {
   )
 }
 
-pokemon_stats <- lapply(pokemon_list$url, get_stats)
+#' Build a local cached stats file from the PokeAPI
+#'
+#' This function is intentionally separate from package load to avoid
+#' network calls in automated environments (e.g., CI).
+#'
+#' @param path Output path for the JSON cache.
+#' @param max_moves Max moves per Pokemon to include (default 5).
+#' @param limit Maximum number of Pokemon to fetch (default 100000).
+#' @param offset Offset for pagination (default 0).
+#' @return Invisibly returns the output path.
+#' @keywords internal
+build_pokemon_stats_cache <- function(path = "pokemon_stats.json",
+                                      max_moves = 5,
+                                      limit = 100000,
+                                      offset = 0) {
+  res <- httr::GET(
+    "https://pokeapi.co/api/v2/pokemon",
+    query = list(limit = limit, offset = offset)
+  )
+  httr::stop_for_status(res)
 
-json_out <- prettify(toJSON(pokemon_stats, auto_unbox = TRUE, pretty = TRUE))
-writeLines(json_out, "pokemon_stats.json")
+  pokemon_list <- jsonlite::fromJSON(
+    httr::content(res, "text", encoding = "UTF-8")
+  )$results
+
+  pokemon_stats <- lapply(pokemon_list$url, get_stats, max_moves = max_moves)
+
+  json_out <- jsonlite::prettify(
+    jsonlite::toJSON(pokemon_stats, auto_unbox = TRUE, pretty = TRUE)
+  )
+  writeLines(json_out, path)
+  invisible(path)
+}

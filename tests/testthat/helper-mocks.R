@@ -1,7 +1,11 @@
 # helper-mocks.R
 # Utilities for mocking package functions without extra dependencies.
 
-with_mocked_in_namespace <- function(pkg, ..., code) {
+with_mocked_in_namespace <- function(pkg, code, ...) {
+  # Back-compat: package was previously named PokemonAnalyzer.
+  if (identical(pkg, "PokemonAnalyzer")) {
+    pkg <- "pokeapiclient"
+  }
   ns <- asNamespace(pkg)
   bindings <- list(...)
 
