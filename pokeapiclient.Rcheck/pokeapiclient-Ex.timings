@@ -1,7 +1,0 @@
-name	user	system	elapsed
-call_gemini	0	0	0	
-get_pokemon_id	0.002	0.000	0.003	
-pokeapi_get_move	0	0	0	
-pokeapi_get_pokemon	0	0	0	
-pokeapi_list_pokemon	0.004	0.002	0.006	
-pokeapi_set_base_url	0	0	0	

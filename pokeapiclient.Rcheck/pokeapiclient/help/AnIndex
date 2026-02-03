@@ -1,6 +1,0 @@
-call_gemini	call_gemini
-get_pokemon_id	get_pokemon_id
-pokeapi_get_move	pokeapi_get_move
-pokeapi_get_pokemon	pokeapi_get_pokemon
-pokeapi_list_pokemon	pokeapi_list_pokemon
-pokeapi_set_base_url	pokeapi_set_base_url

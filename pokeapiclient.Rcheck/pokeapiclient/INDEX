@@ -1,7 +1,0 @@
-call_gemini             Call the Gemini API
-get_pokemon_id          Look up a Pokemon's ID and type from the cached
-                        stats file
-pokeapi_get_move        Retrieve move details
-pokeapi_get_pokemon     Retrieve a single Pokemon
-pokeapi_list_pokemon    List Pokemon
-pokeapi_set_base_url    Set the base URL for PokeAPI requests
