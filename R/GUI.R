@@ -157,7 +157,7 @@ server <- function(input, output, session) {
 }
 
 # connects ui to server code for backend
-run_app <- function(...) {
+run_app <- function() {
   if (!interactive()) {
     stop("run_app() must be called in an interactive R session", call. = FALSE)
   }

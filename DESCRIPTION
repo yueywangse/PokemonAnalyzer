@@ -9,11 +9,11 @@ Authors@R: c(person(given = "Yue", family = "Wang", role = c("aut", "cre"),
     person(given = "Jordan", family = "Kaseram", role = "ctb",
     email = "kaseramj2@gmail.com"))
 Maintainer: Yue Wang <yue.yale.wang@hotmail.com>
-Description: Provides a small, well-tested wrapper around the public PokeAPI REST
+Description: Provides a lightweight wrapper around the public PokeAPI REST
     service, including helpers to list Pokemon and retrieve detailed data with
     structured outputs ready for analysis and visualization, and optional Shiny-based 
-    graphical user interface for gameplay assistance.
-License: Apache License 2.0 | file LICENSE.md
+    graphical user interface for interactive analysis.
+License: Apache License 2.0
 URL: https://github.com/yueywangse/PokemonAnalyzer
 BugReports: https://github.com/yueywangse/PokemonAnalyzer/issues
 Depends: R (>= 4.1)
