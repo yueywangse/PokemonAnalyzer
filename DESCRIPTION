@@ -28,6 +28,7 @@ Imports:
     ggplot2,
     ggrepel,
 Suggests:
+    curl,
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
