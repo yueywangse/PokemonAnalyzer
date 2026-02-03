@@ -84,7 +84,7 @@ run_app()
 
 ## Console interface: Team Coverage (1-6 Pokémon)
 
-PokemonAnalyzer also includes an interactive console tool that analyzes a team’s defensive and offensive type match-ups using PokéAPI typing.
+PokemonAnalyzer also includes an interactive console tool that analyzes a team’s defensive and offensive type match-ups using PokéAPI typing. This also then produce a stacked bar chart which displays the base stat totals of the pokemon entered.
 
 ### Run the console tool
 
