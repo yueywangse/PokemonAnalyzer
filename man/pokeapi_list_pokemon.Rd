@@ -9,5 +9,9 @@
 \value{A data frame with columns \code{name}, \code{id}, and \code{url}.}
 \description{Retrieve paginated Pokemon metadata from PokeAPI.}
 \examples{
-pokeapi_list_pokemon(limit = 5)
+\donttest{
+if (curl::has_internet()) {
+  pokeapi_list_pokemon(limit = 5)
+}
+}
 }

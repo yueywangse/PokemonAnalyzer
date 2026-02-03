@@ -9,7 +9,7 @@ test_that("run_team_console runs one cycle and quits", {
 
   fake_analyze <- function(pokemon_names, ...) {
     # minimal fake output object shaped like analyze_team() output
-    types <- names(type_chart)
+    types <- names(pokeapiclient:::type_chart)
     mat <- matrix(1, nrow = length(types), ncol = length(pokemon_names))
     rownames(mat) <- types
     colnames(mat) <- pokemon_names

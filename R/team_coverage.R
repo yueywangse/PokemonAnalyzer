@@ -64,7 +64,7 @@ analyze_team <- function(pokemon_names, fetch_fun = pokeapi_get_pokemon) {
 
   # Fetch pokemon objects
   team <- lapply(pokemon_names, function(nm) {
-    p <- pokeapi_get_pokemon(nm)
+    p <- fetch_fun(nm)
     list(name = p$name, types = get_types_from_api(p))
   })
 

@@ -1,2 +1,15 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.git$
+^\.gitignore$
+^\.Rhistory$
+^\.Rproj\.user$
+^vignettes/\.gitignore$
+^.*\.Rcheck$
+^\.github$
+^workflows$
+^CODE_OF_CONDUCT\.md$
+^CONTRIBUTING\.md$
+^LICENSE\.md$
+^pokemon_stats\.json$
+^test\.R$

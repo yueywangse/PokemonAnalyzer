@@ -1,17 +1,25 @@
 # helper-mocks.R
 # Utilities for mocking package functions without extra dependencies.
 
-with_mocked_in_namespace <- function(pkg, ..., code) {
+with_mocked_in_namespace <- function(pkg, code, ...) {
+  # Back-compat: package was previously named PokemonAnalyzer.
+  if (identical(pkg, "PokemonAnalyzer")) {
+    pkg <- "pokeapiclient"
+  }
   ns <- asNamespace(pkg)
   bindings <- list(...)
 
   old <- list()
+  was_locked <- logical(length(bindings))
+  names(was_locked) <- names(bindings)
+
   for (nm in names(bindings)) {
-    if (exists(nm, envir = ns, inherits = FALSE)) {
-      old[[nm]] <- get(nm, envir = ns, inherits = FALSE)
-    } else {
-      old[[nm]] <- NULL
-    }
+    has_binding <- exists(nm, envir = ns, inherits = FALSE)
+    old[[nm]] <- if (has_binding) get(nm, envir = ns, inherits = FALSE) else NULL
+
+    was_locked[[nm]] <- has_binding && bindingIsLocked(nm, ns)
+    if (was_locked[[nm]]) unlockBinding(nm, ns)
+
     assign(nm, bindings[[nm]], envir = ns)
   }
 
@@ -22,6 +30,7 @@ with_mocked_in_namespace <- function(pkg, ..., code) {
       } else {
         assign(nm, old[[nm]], envir = ns)
       }
+      if (was_locked[[nm]]) lockBinding(nm, ns)
     }
   }, add = TRUE)
 

@@ -50,7 +50,7 @@ type_multiplier <- function(attacking_type, defending_types) {
 
 # --- Type chart + type_multiplier can stay exactly as you have them ---
 
-# Robustly extract type names from the PokéAPI object
+# Robustly extract type names from the PokeAPI object
 get_types_api <- function(p) {
   # your pokeapi_get_pokemon() seems to return p$types as a character vector
   # but we make it robust in case it's a list/data.frame
@@ -79,19 +79,19 @@ get_types_api <- function(p) {
   tolower(as.character(ty))
 }
 
-# Robustly extract base stats from the PokéAPI object
+# Robustly extract base stats from the PokeAPI object
 # expects p$stats to be a data.frame with columns stat + base_stat
 get_stats_api <- function(p) {
   if (is.null(p$stats) || !is.data.frame(p$stats)) {
-    stop("PokéAPI object missing $stats data.frame.", call. = FALSE)
+    stop("PokeAPI object missing $stats data.frame.", call. = FALSE)
   }
   if (!all(c("stat", "base_stat") %in% names(p$stats))) {
-    stop("PokéAPI object $stats must have columns 'stat' and 'base_stat'.", call. = FALSE)
+    stop("PokeAPI object $stats must have columns 'stat' and 'base_stat'.", call. = FALSE)
   }
 
-  lookup <- setNames(p$stats$base_stat, tolower(p$stats$stat))
+  lookup <- stats::setNames(p$stats$base_stat, tolower(p$stats$stat))
 
-  # normalize names that commonly appear from PokéAPI
+  # normalize names that commonly appear from PokeAPI
   hp      <- unname(lookup[["hp"]])
   attack  <- unname(lookup[["attack"]])
   defense <- unname(lookup[["defense"]])
@@ -127,11 +127,11 @@ battle_score_api <- function(p, opp) {
   offense^1.2 * (bulk^0.6)
 }
 
-# --- NEW pokemon_matchup: takes PokéAPI objects ---
+# --- NEW pokemon_matchup: takes PokeAPI objects ---
 pokemon_matchup <- function(yours, opponent, fetch_fun = pokeapi_get_pokemon) {
   # Optional: allow passing names by fetching
-  if (is.character(yours))   yours <- pokeapi_get_pokemon(yours)
-  if (is.character(opponent)) opponent <- pokeapi_get_pokemon(opponent)
+  if (is.character(yours))   yours <- fetch_fun(yours)
+  if (is.character(opponent)) opponent <- fetch_fun(opponent)
 
   s1 <- battle_score_api(yours, opponent)
   s2 <- battle_score_api(opponent, yours)

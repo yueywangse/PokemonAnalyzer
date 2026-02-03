@@ -1,6 +1,4 @@
 # library(PokemonAnalyzer)
-library(ggplot2)
-
 # Simple visualization helpers for PokemonAnalyzer
 
 plot_attack_vs_speed <- function(pokemon_names) {
@@ -19,30 +17,30 @@ plot_attack_vs_speed <- function(pokemon_names) {
   # Keep only attack + speed
   atk_spd <- subset(stat_df, stat %in% c("attack", "speed"))
   # Wide format
-  atk_spd_wide <- reshape(
+  atk_spd_wide <- stats::reshape(
     atk_spd,
     timevar = "stat",
     idvar = c("name", "type"),
     direction = "wide"
   )
   # Plot
-  ggplot(
+  ggplot2::ggplot(
     atk_spd_wide,
-    aes(
+    ggplot2::aes(
       x = value.attack,
       y = value.speed,
       color = type,
       label = name
     )
   ) +
-    geom_point(size = 3) +
+    ggplot2::geom_point(size = 3) +
     ggrepel::geom_text_repel(show.legend = FALSE) +
-    labs(
+    ggplot2::labs(
       x = "Attack",
       y = "Speed",
       title = "Pokemon: Attack vs Speed"
     ) +
-    theme_minimal()
+    ggplot2::theme_minimal()
 }
 
 plot_bst_allocation <- function(pokemon_names) {
@@ -75,8 +73,8 @@ plot_bst_allocation <- function(pokemon_names) {
     levels = c("HP", "Atk", "Def", "SpA", "SpD", "Spe")
   )
 
-  # Order Pokémon by total BST
-  totals <- aggregate(value ~ name, data = stat_df, sum)
+  # Order Pokemon by total BST
+  totals <- stats::aggregate(value ~ name, data = stat_df, sum)
   totals <- totals[order(totals$value), ]
   stat_df$name <- factor(stat_df$name, levels = totals$name)
 
@@ -84,7 +82,7 @@ plot_bst_allocation <- function(pokemon_names) {
     ggplot2::geom_col() +
     ggplot2::labs(
       title = "Base Stat Allocation (BST Breakdown)",
-      x = "Pokémon",
+      x = "Pokemon",
       y = "Base Stat Points",
       fill = "Stat"
     ) +
