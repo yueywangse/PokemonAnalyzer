@@ -12,7 +12,9 @@ Maintainer: Yue Wang <yue.yale.wang@hotmail.com>
 Description: Provides a lightweight wrapper around the public PokeAPI REST
     service, including helpers to list Pokemon and retrieve detailed data with
     structured outputs ready for analysis and visualization, and optional Shiny-based 
-    graphical user interface for interactive analysis.
+    graphical user interface for interactive analysis. The package optionally supports 
+    user-provided API keys for querying external language model services to obtain 
+    supplementary text-based suggestions.
 License: Apache License 2.0
 URL: https://github.com/yueywangse/PokemonAnalyzer
 BugReports: https://github.com/yueywangse/PokemonAnalyzer/issues
