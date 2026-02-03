@@ -5,7 +5,7 @@ test_that("pokeapi_get_pokemon can run without HTTP", {
   }
 
   with_mocked_in_namespace(
-    "PokemonAnalyzer",
+    "pokeapiclient",
     pokeapi_request = fake_request,
     {
       res <- pokeapi_get_pokemon("pikachu")
@@ -29,7 +29,7 @@ test_that("pokeapi_list_pokemon handles pagination without HTTP", {
   }
 
   with_mocked_in_namespace(
-    "PokemonAnalyzer",
+    "pokeapiclient",
     pokeapi_request = fake_request,
     {
       res <- pokeapi_list_pokemon(limit = 5, offset = 0)

@@ -130,8 +130,8 @@ battle_score_api <- function(p, opp) {
 # --- NEW pokemon_matchup: takes PokéAPI objects ---
 pokemon_matchup <- function(yours, opponent, fetch_fun = pokeapi_get_pokemon) {
   # Optional: allow passing names by fetching
-  if (is.character(yours))   yours <- pokeapi_get_pokemon(yours)
-  if (is.character(opponent)) opponent <- pokeapi_get_pokemon(opponent)
+  if (is.character(yours))   yours <- fetch_fun(yours)
+  if (is.character(opponent)) opponent <- fetch_fun(opponent)
 
   s1 <- battle_score_api(yours, opponent)
   s2 <- battle_score_api(opponent, yours)
