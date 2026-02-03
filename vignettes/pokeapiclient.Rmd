@@ -9,7 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
+```{r setup, eval=FALSE}
 knitr::opts_chunk$set(
   comment = "#>",
   collapse = TRUE
@@ -89,7 +89,7 @@ PokemonAnalyzer also includes an interactive console tool that analyzes a team‚Ä
 ### Run the console tool
 
 ```{r, eval=FALSE}
-# run_team_console()
+run_team_console()
 ```
 
 The console interface will prompt you for 1-6 Pok√©mon names, then prints:

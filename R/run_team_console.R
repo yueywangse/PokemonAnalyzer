@@ -60,6 +60,8 @@ run_team_console <- function(input_fun = readline,
     print(round(res$offensive_multiplier_matrix, 2))
     output_fun("\n")
 
+    p <- plot_bst_allocation(team_names)
+    print(p)
     output_fun("Tip: type another team, or 'q' to quit.\n\n")
   }
 }
