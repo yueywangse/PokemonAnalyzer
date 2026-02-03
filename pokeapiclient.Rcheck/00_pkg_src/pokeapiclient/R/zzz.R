@@ -1,0 +1,10 @@
+utils::globalVariables(
+  c(
+    "stat",
+    "value.attack",
+    "value.speed",
+    "type",
+    "name",
+    "value"
+  )
+)

@@ -1,0 +1,29 @@
+Package: pokeapiclient
+Type: Package
+Title: Client for the PokeAPI REST Service
+Version: 0.1.0
+Authors@R: c(person(given = "Yue", family = "Wang", role = c("aut", "cre"),
+    email = "yue.yale.wang@hotmail.com"),
+    person(given = "Richard", family = "Hua", role = "ctb",
+    email = "yue.yale.wang@hotmail.com"),
+             person(given = "Jordan", family = "Kaseram", role = "ctb",
+    email = "kaseramj2@gmail.com"))
+Author: Yue Wang [aut, cre], Richard Hua [ctb], Jordan Kaseram [ctb]
+Maintainer: Yue Wang <yue.yale.wang@hotmail.com>
+Description: Provides a small, well-tested wrapper around the public PokeAPI REST
+    service, including helpers to list Pokemon and retrieve detailed data with
+    structured outputs ready for analysis and visualization, and GUI functionality
+    for gameplay.
+License: Apache License (== 2.0)
+URL: https://github.com/yueywangse/PokemonAnalyzer
+BugReports: https://github.com/yueywangse/PokemonAnalyzer/issues
+Depends: R (>= 4.1)
+Imports: httr, jsonlite, shiny, shinyjs, ggplot2, ggrepel
+Suggests: curl, testthat (>= 3.0.0), knitr, rmarkdown
+Encoding: UTF-8
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+RoxygenNote: 7.3.2
+NeedsCompilation: no
+Packaged: 2026-02-03 01:28:34 UTC; richardhua
+Built: R 4.5.2; ; 2026-02-03 01:28:39 UTC; unix

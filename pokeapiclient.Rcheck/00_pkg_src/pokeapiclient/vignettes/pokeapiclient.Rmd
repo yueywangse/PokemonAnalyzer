@@ -1,0 +1,127 @@
+---
+title: "Getting Started with PokemonAnalyzer"
+author: "PokemonAnalyzer Contributors"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with PokemonAnalyzer}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  comment = "#>",
+  collapse = TRUE
+)
+
+has_net <- function() {
+  requireNamespace("curl", quietly = TRUE) && curl::has_internet()
+}
+```
+
+PokemonAnalyzer is a lightweight R wrapper around the public PokéAPI. It provides simple functions to fetch Pokémon and move data, plus optional interfaces for: - an interactive GUI battle calculator (Shiny) - an interactive console team coverage tool
+
+## Installation
+
+```{r, eval=FALSE}
+# install.packages("devtools")
+# devtools::install_github("yueywangse/PokemonAnalyzer")
+```
+
+## Load the package
+
+```{r load, eval=FALSE}
+library(PokemonAnalyzer)
+```
+
+If you are developing locally inside the repo, use:
+
+```{r load_all, eval=FALSE}
+devtools::load_all()
+```
+
+## API wrapper basics
+
+### List Pokémon
+
+```{r list_pokemon, eval=FALSE}
+if (has_net()) {
+  head(pokeapi_list_pokemon(limit = 10))
+}
+```
+
+### Fetch Pokémon details
+
+```{r fetch_pokemon, eval=FALSE}
+if (has_net()) {
+  pika <- pokeapi_get_pokemon("pikachu")
+  pika$name
+  pika$types
+  head(pika$stats)
+}
+```
+
+### Fetch move details
+
+```{r fetch_moves, eval=FALSE}
+if (has_net()) {
+  mv <- pokeapi_get_move("thunderbolt")
+  mv$power
+  mv$accuracy
+  mv$type
+  mv$damage_class
+}
+```
+
+## GUI: Battle Calculator
+
+PokemonAnalyzer includes a Shiny-based GUI battle calculator. This is an interactive feature, so we do not run it automatically inside the vignette.
+
+```{r gui_source, eval=FALSE}
+run_app()
+```
+
+## Console interface: Team Coverage (1-6 Pokémon)
+
+PokemonAnalyzer also includes an interactive console tool that analyzes a team’s defensive and offensive type match-ups using PokéAPI typing.
+
+### Run the console tool
+
+```{r, eval=FALSE}
+# run_team_console()
+```
+
+The console interface will prompt you for 1-6 Pokémon names, then prints:
+
+-   **Defensive multiplier matrix** (rows = attacking type, columns = your team)
+
+-   **Types with no team resistance** (no Pokémon takes \<= 0.5x)
+
+-   **Offensive multiplier matrix** (rows = defending type, columns = your team)
+
+## Visualizations
+
+### Base stat allocation
+
+This plot shows how each Pokémon’s base stat total (BST) are allocated across the six stats (HP, Attack, Defense, Special Attack, Special Defense, Speed).
+
+```{r bst_plot, eval=FALSE}
+if (has_net()) {
+  plot_bst_allocation(c("stakataka", "regieleki", "cleffa", "eevee"))
+}
+```
+
+### Attack vs. Speed
+
+This plot compares Attack and Speed for a small set of Pokémon.
+
+```{r atk_speed_plot, eval=FALSE}
+ if (has_net()) {
+  plot_attack_vs_speed(c("stakataka", "regieleki", "cleffa", "eevee"))
+}
+```
+
+## Notes on offline use
+
+These functions call the PokéAPI, so you need an internet connection.
