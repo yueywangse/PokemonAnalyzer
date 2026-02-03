@@ -5,8 +5,8 @@ Version: 0.1.0
 Authors@R: c(person(given = "Yue", family = "Wang", role = c("aut", "cre"),
     email = "yue.yale.wang@hotmail.com"),
     person(given = "Richard", family = "Hua", role = "ctb",
-    email = "yue.yale.wang@hotmail.com"),
-             person(given = "Jordan", family = "Kaseram", role = "ctb",
+    email = "hua.richard0@gmail.com"),
+    person(given = "Jordan", family = "Kaseram", role = "ctb",
     email = "kaseramj2@gmail.com"))
 Author: Yue Wang [aut, cre], Richard Hua [ctb], Jordan Kaseram [ctb]
 Maintainer: Yue Wang <yue.yale.wang@hotmail.com>
